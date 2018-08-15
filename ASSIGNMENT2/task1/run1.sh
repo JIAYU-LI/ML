@@ -1,0 +1,1 @@
+hadoop jar /opt/hadoop/hadoop-2.7.3/share/hadoop/tools/lib/hadoop-streaming-2.7.3.jar -input /data/assignments/ex2/part1/large/ -output /user/$USER/data/assign2-1 -mapper map1.py -file ASSIGNMENT2/task1/map1.py -reducer reduce1.py -file ASSIGNMENT2/task1/reduce1.py

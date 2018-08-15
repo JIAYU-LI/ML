@@ -1,0 +1,39 @@
+want to use a to change a is my trans I try to build I get this implicitly convert type to tried making to but then the control This code has worked fine for me in in the setting a opacity should I use a decimal or
+
+have an absolutely positioned containing several one of which is a relatively positioned When I use a on the child it collapses to width on but not on Firefox or I use it If the parent is relatively the percentage width on the child there something missing there an easy fix for this besides the on the there an area of the specification that covers the percentage width child in absolutely positioned parent
+
+explicit cast to double trans the constant as as is trans trans
+
+there any conversion tools for porting from code to for Converting Visual code to
+
+a representing a how do I calculate their do I calculate age in
+
+a specific how do I display relative hours days month do I calculate relative
+
+how we do it on Stack ts new delta return 1 second seconds return minute 45 return minutes 90 return hour 24 60 return hours 48 60 return 30 24 60 return days 12 30 24 60 int months return months 1 month months months years years 1 year years years Ways to improve this
+
+there a standard way for a Web Server to determine what time zone offset a user is a or part of the description a web time
+
+is the difference between and in between and
+
+do you expose a query as an web from the business I can return a typed or which can be serialized for transport over can I do the same for a Is there a way to populate a typed or via a static MyDataTable string conn MyDatabaseDataContext db new MyDataTable dt new execute a sproc via var query from dr in select copy LINQ query resultset into a DataTable does not work dt return can I get the resultset of a query into a or is the query serializeable so that I can expose it as an web a DataSet or DataTable from a LINQ query result
+
+do I store binary data in Data in
+
+a table like TABLE id NOT NULL PRIMARY description filename filesize filetype is a PHP by Florian Dittmer Example php script to demonstrate the storing of binary files an sql More information can be found at binary data into SQL Code that will be executed if the form has been if Connect to the database may have to the username or INTO print file has the following Database else else show the form to submit new echo File to in
+
+are welcome in any looking for the fastest way to obtain the value of as a personal More specifically using ways that involve using constants like or the number program below tests the various ways I know The inline assembly version in the fastest though clearly not included it as a baseline to compare the other versions In my with the version is fastest on GCC because it the into a With the version is the main testing program ITERS diff time1 for i diff time2 time inline return int double The atan2 case catches atan folding optimise the to a if is not extern double Actual tests start return the inline assembly stuff noting that it will only work for x86 and x64 double return a build script that builds all the configurations testing from testing between various compiler flags compared against because the optimisations are also tried switching the order of the tests The version still comes out top every is the fastest way to get the value of
+
+years to provide an calculator on my I wrote a function to calculate age to a This is a quick port of that function to PHP afraid I been able to test the but hope you enjoy all the this is a bit gimmicky for the purposes of showing user profiles on Stack but maybe readers will find some use for DateTime double years If date2 and date1 are on different of 29 then our partial year is considered to have days otherwise Note that 59 is the day of 29 double fraction 59 1 The only really nontrivial case is if date1 is in a leap and date2 is So handle the others if return years If date2 is in a leap but date1 is not and is March shift up by a if return years 59 1 If date1 is not on 29 shift down date1 by a day March or Proceed if return years 59 1 here date1 is on 29 and date2 is not on a What to do On 28 Feb in the should be just shy of a whole and on 1 Mar should just Perhaps the easiest way is to a point between those return years
+
+best way that I know of because of leap years and everything birthDate new age this
+
+I have a trigger the on a how can I throw an error that prevents the update on that an error in a MySQL
+
+been having issues getting the C sockets API to work properly in although I am including I still get compile time errors telling me that is not Am I missing something or could this be related to the fact that doing this coding on and my problems are much more Upon further I discovered that there is an that Apparently happy unless I define which type of sockets using with a I personally have no idea what this OE SOCKETS thingy and if any sockets programmers are out there 3 of perhaps you could give me a rundown of how this all to use the C socket API in on
+
+answer by phpguy is correct but I think there is a lot of confusing additional detail The basic answer is a BLOB BLOB is short for Binary Large OBject and that column type is specifically for handling binary relevant manual
+
+yours seems a little However it does seem a little more robust with support for and But in my experience when this is used the person is most likely to view the content in the first 30 It is only the really hardcore people that come after So that is why I usually elect to keep this short and is the method I am currently using on one of my This only returns a relative And then the user has to slap on in the static string TimeSpan string output if output days if 0 output hr if 0 output min if output return
+
+are no HTTP headers that will report the clients timezone so far although it has been suggested to include it in the HTTP it was I would probably try to fetch the timezone using clientside JavaScript and then submit it to the server using Ajax or

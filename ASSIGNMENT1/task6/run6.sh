@@ -1,0 +1,1 @@
+hadoop jar /opt/hadoop/hadoop-2.7.3/share/hadoop/tools/lib/hadoop-streaming-2.7.3.jar -input /user/$USER/data/task4-output -output /user/$USER/data/task6-output -mapper mapper6.py -file mapper6.py -combiner combiner6.py -file combiner6.py -reducer reducer6.py -file reducer6.py
