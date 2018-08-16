@@ -1,0 +1,224 @@
+from __future__ import absolute_import
+from __future__ import print_function
+import numpy as np
+import random
+from keras.optimizers import SGD, RMSprop, Adam
+from keras import backend as K
+from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.layers import Conv2D, MaxPooling2D, Input, Lambda
+from keras.layers import Flatten, Dense, BatchNormalization, Activation, Dropout
+from keras.layers.advanced_activations import PReLU
+from keras.models import Sequential, load_model, Model
+from keras.regularizers import l2
+from keras.losses import binary_crossentropy
+
+from data_provider64 import MODELS_DIR
+
+import os
+from os.path import join, dirname, isfile, abspath
+from keras.preprocessing.image import img_to_array, load_img #convert image to array
+
+np.random.seed(1337)  # for the sake of reproducibility
+
+IMGS_DIM_2D = (64, 64)
+DATA_DIR = join(dirname(dirname(__file__)), 'data')
+tr_dir = join(DATA_DIR, 'train_{:d}'.format(IMGS_DIM_2D[0]))
+val_dir = join(DATA_DIR, 'val_{:d}'.format(IMGS_DIM_2D[0]))
+NEW_TEST_DIR = join(DATA_DIR, 'test_{:d}'.format(IMGS_DIM_2D[0]))
+NEW_TEST_DIR = join(NEW_TEST_DIR, 'all')
+
+IMGS_DIM_3D = (3, 64, 64)
+CNN_MODEL_FILE = join(MODELS_DIR, 'cnn.h5')
+nb_epoch = 200
+BATCH_SIZE = 96
+L2_REG = 0.03
+W_INIT = 'he_normal'
+LAST_FEATURE_MAPS_LAYER = 46
+LAST_FEATURE_MAPS_SIZE = (128, 8, 8)
+PENULTIMATE_LAYER = 51
+PENULTIMATE_SIZE = 2048
+SOFTMAX_LAYER = 55
+SOFTMAX_SIZE = 475
+N_author = 60
+
+
+
+
+def euclidean_distance(vects):
+    x, y = vects
+    return K.sqrt(K.sum(K.square(x - y), axis=1, keepdims=True))
+
+
+def eucl_dist_output_shape(shapes):
+    shape1, shape2 = shapes
+    return (shape1[0], 1)
+
+
+
+def contrastive_loss(y, d):
+    """ Contrastive loss from Hadsell-et-al.'06
+        http://yann.lecun.com/exdb/publis/pdf/hadsell-chopra-lecun-06.pdf
+    """
+    margin = 1
+    loss = K.mean(y * K.square(d) + (1 - y) * K.square(K.maximum(margin - d, 0)))
+    return loss
+
+
+def create_pairs(x):
+    '''Positive and negative pair creation. '''
+    pairs = []
+    labels = []
+    for i in range(N_author): 
+        n = len(x[i]) #100/10 per artist
+        # select one class from 60
+        s = random.randrange(1, N_author)  
+        i2 = (i + s) % N_author
+
+        for j in range(n-8):
+            
+            #create pairs for the same class, label is 1
+            for p in range(1, 9):
+                pairs.append([x[i][j], x[i][j+p]])   
+  
+                #select another class except for the selected one i2 and elect a painting from the second class
+	        #get pairs from different authors, label is 0    
+                pairs.append([x[i][j], x[i2][j+p]])    
+                labels += [1, 0]
+    return np.array(pairs), np.array(labels)
+
+def compute_accuracy(predictions, labels):
+    """ Compute classification accuracy with a fixed threshold on distances.
+    """
+    return labels[predictions.ravel() < 0.5].mean()
+
+
+def load_img_arr(img):
+    '''Convert the path of image into a 3-D array'''
+    return img_to_array(load_img(img))
+
+def load_data(path):
+    
+    X = [[]for i in range(N_author)]
+    i = 0 #n_author
+    j = 0 #n of pictures
+    for class_author in os.listdir(path):
+        author_dir = abspath(join(path, class_author))
+
+        for picture_id in os.listdir(author_dir):
+            picture_path = abspath(join(author_dir, picture_id))
+            X[i].append(load_img_arr(picture_path))
+            j +=1
+        i += 1  
+    
+    return np.asarray(X)
+
+
+X_tr= load_data(tr_dir)
+
+X_val= load_data(val_dir)
+
+
+# obtain training and validation positive and negative pairs
+tr_pairs, tr_y = create_pairs(X_tr)
+val_pairs, val_y = create_pairs(X_val)
+
+
+def create_cnn_network(imgs_dim, compile_=True):
+    """ Base network to be shared (eq. to feature extraction).
+    """
+    cnn = Sequential()
+    cnn.add(_convolutional_layer(nb_filter=16, input_shape=imgs_dim))
+    cnn.add(BatchNormalization(axis=1, mode=0))
+    cnn.add(PReLU(init=W_INIT))
+    cnn.add(_convolutional_layer(nb_filter=16))
+    cnn.add(BatchNormalization(axis=1, mode=0))
+    cnn.add(PReLU(init=W_INIT))
+    cnn.add(MaxPooling2D(pool_size=(2, 2)))
+
+    cnn.add(_convolutional_layer(nb_filter=32))
+    cnn.add(BatchNormalization(axis=1, mode=0))
+    cnn.add(PReLU(init=W_INIT))
+    cnn.add(_convolutional_layer(nb_filter=32))
+    cnn.add(BatchNormalization(axis=1, mode=0))
+    cnn.add(PReLU(init=W_INIT))
+    cnn.add(_convolutional_layer(nb_filter=32))
+    cnn.add(BatchNormalization(axis=1, mode=0))
+    cnn.add(PReLU(init=W_INIT))
+    cnn.add(MaxPooling2D(pool_size=(2, 2)))
+
+    
+    cnn.add(Dropout(p=0.5))
+
+    cnn.add(Flatten())
+    cnn.add(_dense_layer(output_dim=PENULTIMATE_SIZE))
+    cnn.add(BatchNormalization(mode=0))
+    cnn.add(PReLU(init=W_INIT))
+
+    
+    return cnn
+
+def _convolutional_layer(nb_filter, input_shape=None):
+    if input_shape:
+        return _first_convolutional_layer(nb_filter, input_shape)
+    else:
+        return _intermediate_convolutional_layer(nb_filter)
+
+
+def _first_convolutional_layer(nb_filter, input_shape):
+    return Conv2D(
+        nb_filter=nb_filter, nb_row=3, nb_col=3, input_shape=input_shape,
+        border_mode='same', init=W_INIT, W_regularizer=l2(l=L2_REG))
+
+
+def _intermediate_convolutional_layer(nb_filter):
+    return Conv2D(
+        nb_filter=nb_filter, nb_row=3, nb_col=3, border_mode='same',
+        init=W_INIT, W_regularizer=l2(l=L2_REG))
+
+
+def _dense_layer(output_dim):
+    return Dense(output_dim=output_dim, W_regularizer=l2(l=L2_REG), init=W_INIT)
+
+
+
+
+
+left_input = Input(shape=(IMGS_DIM_3D))
+right_input = Input(shape=(IMGS_DIM_3D))
+
+
+# base_network as the shared weight network 
+base_network = create_cnn_network(IMGS_DIM_3D)
+processed_left = base_network(left_input)
+processed_right = base_network(right_input)
+
+
+
+distance = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([processed_left, processed_right])
+
+model = Model(input=[left_input, right_input], output=distance)
+
+
+
+adam = Adam(lr=0.000074)
+model.compile(loss='binary_crossentropy', optimizer=adam)
+
+
+
+model.fit([tr_pairs[:, 0], tr_pairs[:, 1]], tr_y, batch_size=128, nb_epoch=nb_epoch,
+          validation_data=([val_pairs[:, 0], val_pairs[:, 1]], val_y),callbacks=[ModelCheckpoint(CNN_MODEL_FILE, save_best_only=True), EarlyStopping(monitor='val_loss', patience=20)],verbose=2)
+#callbacks=[EarlyStopping(monitor='val_loss', patience=2)]
+model.save('sia1.h5')
+
+
+pred = model.predict([tr_pairs[:, 0], tr_pairs[:, 1]])
+tr_acc = compute_accuracy(pred, tr_y)
+print(pred)
+pred = model.predict([val_pairs[:, 0], val_pairs[:, 1]])
+val_acc = compute_accuracy(pred, val_y)
+
+print('* Accuracy on training set: %0.2f%%' % (100 * tr_acc))
+print('* Accuracy on validation set: %0.2f%%' % (100 * val_acc))
+
+
+
