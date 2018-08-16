@@ -1,1 +1,0 @@
-hadoop jar /opt/hadoop/hadoop-2.7.3/share/hadoop/tools/lib/hadoop-streaming-2.7.3.jar -D mapred.reduce.tasks=1 -input /data/assignments/ex2/part2/stackLarge.txt -output /user/$USER/data/assign2-3 -mapper map3.py -file ASSIGNMENT2/TASK3/map3.py -reducer reduce3.py -file ASSIGNMENT2/TASK3/reduce3.py
