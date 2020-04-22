@@ -1,0 +1,78 @@
+定义一个函数，输入一个链表的头节点，反转该链表并输出反转后链表的头节点。
+
+测试用例：
+输入的链表头指针是nullptr；
+输入的链表只有一个节点；
+输入的链表有多个节点；
+
+
+链表节点定义如下：
+struct ListNode
+{
+    int m_nKey;
+    ListNode* m_pNext;
+}
+
+ListNode* ReverseList(ListNode* pHead)
+{
+    ListNode* pReversedHead = nullptr;
+    ListNode* pNode = pHead;
+    ListNode* pPrev = nullptr;
+    while(pNode != nullptr)
+    {
+        ListNode* pNext = pNode->m_pNext;
+        if(pNext==nullptr)
+            pReversedHead = pNode;
+        pNode->m_pNext=pPrev;
+        pPrev = pNode;
+        pNode=pNext;
+    }
+    return pReversedHead;
+}
+    
+//非递归反转链表
+private static Node reverseList(node head){
+    Node pre = null;
+    Node next = null;
+    while (head!=null){
+        next = head.next;//next保存head的下一个节点
+        head.next = pre;//将当前节点next指向前一个节点，实现反转
+        pre = head;//将当前节点的前节点后移
+        head = next;//将当前节点后移
+    }
+    return pre;
+}
+
+        
+//递归反转链表-从头到尾
+private static Node reverseList(Node head){
+    if(head==null||head.next==null)
+        return head;
+    Node next = head.next;
+    Node prev = reverList(next);
+    head.next.next = head;
+    head.next = null;
+    return prev;
+}
+
+定义三个指针，分别指向当前遍历到的节点pNode，它的前一节点pPrev及后一个节点pNext
+class pSolution:
+    def ReverseList(self, pHead):
+        pReversedHead=None
+        pNode=pHead
+        pPrev=None
+        while pNode:
+            pNext=pNode.next
+            if not pNext:
+                pReversedHead=pNode
+            pNode.next=pPrev
+            pPrev=pNode
+            pNode=pNext
+        return pReversedHead
+        
+    def reverseList(self, head)
+        prev = None
+        while head:
+            head.next, prev, head = prev, head, head.next
+        return prev
+        
