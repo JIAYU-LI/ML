@@ -29,13 +29,15 @@ ListNode* ReverseList(ListNode* pHead)
     }
     return pReversedHead;
 }
-    
+
+
+
 //非递归反转链表
 private static Node reverseList(node head){
     Node pre = null;
     Node next = null;
     while (head!=null){
-        next = head.next;//next保存head的下一个节点
+        next = head.next;//next保存head的下一个节点，先保存后一个节点再调整当前节点，以防止断裂
         head.next = pre;//将当前节点next指向前一个节点，实现反转
         pre = head;//将当前节点的前节点后移
         head = next;//将当前节点后移
@@ -43,7 +45,6 @@ private static Node reverseList(node head){
     return pre;
 }
 
-        
 //递归反转链表-从头到尾
 private static Node reverseList(Node head){
     if(head==null||head.next==null)
@@ -54,6 +55,9 @@ private static Node reverseList(Node head){
     head.next = null;
     return prev;
 }
+
+
+
 
 定义三个指针，分别指向当前遍历到的节点pNode，它的前一节点pPrev及后一个节点pNext
 class pSolution:
