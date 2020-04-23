@@ -1,0 +1,20 @@
+找出数组中和最大的子数组
+
+1）最大的和：O(n)
+private int maxSum(int[] arr){
+    int n = arr.length;
+    if (n==1){
+        return arr[0];
+    }
+    
+    int start = arr[n-1];
+    int all = arr[n-1];
+    
+    for(int i = n-2; i >=0; i--){
+        start = Integer.max(arr[i], start+arr[i]);
+        all = Integer.max(all, start);
+    }
+    return all;
+}
+
+
