@@ -1,0 +1,74 @@
+用俩个栈实现一个队列。实现队列的俩个函数appendTail在队列尾部插入节点，deleteHead在队列头部删除节点
+
+先将元素插入stack1，再弹出插入到stack2，则stack2中顺序与stack1正好相反
+一个栈用于添加元素，一个栈用于弹出元素
+
+template<typename T>void CQueue<T>::appendTail(const T&element)
+{
+    stack1.push(element);
+}
+
+template<typename T> T CQueue<T>::deleteHead()
+{
+    if(stack2.size()<=0)
+    {
+        while(stack1.size()>0)
+        {
+            T& data = stack1.top();
+            stack1.pop();
+            stack2.push(data);
+        }
+    }
+    
+    if(stack2.size() == 0)
+        throw new exception("queue is empty");
+    T head = stack2.top();
+    stack2.pop();
+    
+    return head;
+}
+
+
+import java.util.Stack;
+
+public class Solution {
+    Stack<Integer> stack1 = new Stack<Integer>();
+    Stack<Integer> stack2 = new Stack<Integer>();
+    
+    public void push(int node) {
+        stack1.push(node);
+    }
+    
+    public int pop() {
+        if(stack2.size() == 0) {
+            while(!stack1.isEmpty()) {
+                int temp = stack1.peek();
+                stack2.push(temp);
+                stack1.pop();
+            }
+        }
+        int res = stack2.peek();
+        stack2.pop();
+        return res;
+    }
+}
+
+
+class QueueWithStacks(object):
+    def __init__(self):
+        self._stack1 = []
+        self._stack2 = []
+    def appendTail(self, x):
+        self._stack1.append(x)
+    def deleteHead(self):
+        if self._stack2:
+            return self._stack2.pop()
+        else:
+            if self._stack1:
+                while self._stack1:
+                    self._stack2.append(self._stack1.pop())
+                return self._stack2.pop()
+            else:
+                return None
+    def getQueue(self):
+        return self._stack1
