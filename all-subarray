@@ -1,0 +1,40 @@
+查找出数组中全部子数组
+
+利用递归求子集，数组中每一位只有俩个状态：在子集中和不在子集中。
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+public class Test{
+    static Set<List<Integer>> set = new HashSet<>();
+    public static void main(String[] args){
+        int[] arr = {1, 2, 3, 4};
+        boolean[] booleans = new boolean[arr.length];
+        find(arr, 0, booleans);
+        System.out.println(set);
+    }
+    
+    static void find(int[] arr, int position, boolean[] isIns){
+        if (position == arr.length){
+            List<Integer> list = new LinkedList<>();
+            for (int i = 0; i < arr.length; i++){
+                if (isIns[i]){
+                    list.add(arr[i]);
+                }
+            }
+            set.add(list);
+        }
+        else{
+            isIns[position] = true;
+            find(arr, position + 1, isIns);
+            isIns[position] = false;
+            find(arr, position+1, isIns);
+        }
+        
+    }
+}
+
+    
+
