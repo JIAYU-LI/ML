@@ -1,4 +1,70 @@
 Find the any random duplicate number in the array.
+找出数组中重复的数字。
+=======
+* method 1:从头到尾扫描排序，排序一个长度为n的数组需要n(nlogn)的时间。
+_______
+
+int findRepeatNumber(vector<int>& nums) {
+        sort(nums.begin(),nums.end());
+        for(int i=1;i<nums.size();i++){
+            if(nums[i-1] == nums[i]) return nums[i];
+        }
+        return -1;
+    }
+
+class Solution:
+    def findRepeatNumber(self, nums: List[int]) -> int:
+        nums.sort()
+        pre = nums[0]
+        n = len(nums)
+        for index in range(1, n):
+            if pre == nums[index]:
+                return pre
+            pre = nums[index]
+            
+`一维数组在内存中占据连续的空间，可以根据下标定位对应的元素。`
+* method 2:从头到尾扫描数组中每一个元素，没扫描到一个元素，用O(1)的时间判断哈希表中是否已经包含了该数字。
+_______
+c++
+int findRepeatNumber(vector<int>& nums) {
+        unordered_map<int,int> mp;
+        for(int i=0;i<nums.size();i++){
+            if(mp.find(nums[i]) != mp.end()) return nums[i];
+            else mp[nums[i]] ++;
+        }
+        return -1;
+    }
+    
+java   
+class Solution {
+    public int findRepeatNumber(int[] nums) {
+        int[] arr = new int[nums.length];
+        for(int i = 0; i < nums.length; i++){
+            arr[nums[i]]++;
+            if(arr[nums[i]] > 1) return nums[i];
+        }
+        return -1;
+    }
+}
+
+python
+class Solution:
+    def findRepeatNumber(self, nums: List[int]) -> int:
+        repeatDict = {}
+        for num in nums:
+            if num not in repeatDict:
+                repeatDict[num] = 1
+            else:
+                return num
+如果哈希表中已经存在该数字，就找到了一个重复的数字。time complexity：O(n) space complexity：O(n)
+
+若数组中数字都在0～n-1的范围，若数组中无重复的数字，那么数组排序后数字i将出现在小标i的位置。`鸽巢原理`
+* method 3:从头到尾扫描这个数组中每个数字，当扫描到下标为i的数字时，首先比较这个数字m是否等于i。
+_______
+是，则扫描下一个数字；不是则再拿它与第m个数字比较，若俩者相等，找到了一个重复的数字；若不相等，则把第m个数字与第i个数字交换；重复。。。
+尽管如下代码有一个俩重循环，每个数字最多只要交换俩次即可找到属于它自己的位置，总time complexity是O(n)。
+操作均在输入数组上进行，不需额外分配内存，space complexity：O(1)
+
 bool duplicate(int numbers[], int length, int*duplication)
 {
     if(numbers == nullptr||length <= 0)
@@ -31,4 +97,25 @@ bool duplicate(int numbers[], int length, int*duplication)
     return false;
     
 }
-               
+
+int findRepeatNumber(vector<int>& nums) {
+        for(int i=0;i<nums.size();i++){
+            while(nums[i]!=i){
+                if(nums[nums[i]] == nums[i]) return nums[i];
+                int tmp = nums[i];
+                nums[i] = nums[tmp];
+                nums[tmp] = tmp;
+            }
+        }
+        return -1;
+    }
+    
+class Solution:
+    def findRepeatNumber(self, nums) -> int:
+        n = len(nums)
+        for i in range(n):
+            while i != nums[i]:              
+                if nums[i] == nums[nums[i]]:
+                    return nums[i]
+                temp = nums[i]
+                nums[i], nums[temp] = nums[temp], nums[i]
