@@ -119,3 +119,55 @@ class Solution:
                     return nums[i]
                 temp = nums[i]
                 nums[i], nums[temp] = nums[temp], nums[i]
+                
+不修改数组找到重复的数字
+在一个长度为n+1的数组中，所有数字都在1～n的范围，所以数组中至少有一个数字是重复的。
+
+* method 1: 创建一个长度为n+1的辅助数组，然后逐一把原数组的每个数字复制到辅助数组。
+如果原数组中被复制的数字是m，则把它复制到辅助数组中下标为m的位置，space complexity：O(n)
+
+* method 2:将1～n的数字从中间的数字m分为俩部分，前面一半为1～m，后面一半为m+1～n。
+以时间换空间，该方法不能保证找到所有重复数字。
+如果前面1～m的数字的数目超过m，那么这一半的区间一定包含重复的数字；否则另一半一定包含重复数字。
+继续将包含重复数字的区间一分为二，直到找到一个重复的数字。此法与二分查找类似，多了一步统计区间里数字的数目。
+总time complexity：O(nlogn)，space complexity：O(1)
+
+int getDuplication(const int* numbers, int length)
+{
+    if(numbers == nullptr||length<=0)
+        return -1;
+    int start = 1;
+    int ned = length -1;
+    while(end >= start)
+    {
+        int muddle = ((end-start)>>1) + start;
+        int count = countRange(numbers, length, start, middle); //对输入长度n的数组，函数countRange将被调用O(logn)次，每次需要O(n)的时间。
+        if(end == start)
+        {
+            if(count > 1)
+                return start;
+            else
+                break;
+        }
+        if(count > (middle-start+1))
+            end = middle;
+        else
+            start = middle+1;
+    }
+    return -1;
+}
+
+int countRange(const int* numbers, inr length, int start, int end)
+{
+    if(numbers == nullptr)
+        return 0;
+    int count = 0;
+    for(int i = 0; i<length;i++)
+        if(numbers[i]>=start&&numbers[i]<=end)
+            ++count;
+    return count;
+}
+
+
+在一个长度为n+1的数组中，所有数字都在1～n的范围，所以数组中至少有一个数字是重复的。原数组
+在一个长度为n+1的数组中，所有数字都在1～n的范围，所以数组中至少有一个数字是重复的。
